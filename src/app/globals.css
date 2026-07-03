@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  /* Throughline Brand Bible v2 — the only palette in this UI */
+  --color-creek-stone: #1C1712;
+  --color-parchment: #F2E6BC;
+  --color-bark-shadow: #EDE4D0;
+  --color-dry-sand: #D4CDBF;
+  --color-trail-dust: #7A736A;
+  --color-amber-light: #C4873A;
+  --color-amber-deep: #B37A31;
+  --color-wet-stone: #6B4C2A;
+  --color-creek-moss: #4A7C59;
+  --color-creek-blue: #5B8FA8;
+  --color-deep-river: #1E2A3A;
+
+  --font-serif: var(--font-lora), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #F2E6BC;
+  color: #1C1712;
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+select,
+button,
+textarea {
+  font-family: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid #C4873A;
+  outline-offset: 1px;
+}
+
+::placeholder {
+  color: #7A736A;
+  opacity: 0.7;
+}
+
+@keyframes brookFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes skeletonBreath {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.skeleton {
+  background: #EDE4D0;
+  border: 1px solid #D4CDBF;
+  border-radius: 12px;
+  animation: skeletonBreath 1.6s ease-in-out infinite;
+}

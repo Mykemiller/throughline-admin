@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum SubscriberStatus {
+  active
+  invited
+  suspended
+  cancelled
+}
+
+enum Plan {
+  founding
+  family
+  solo
+}
+
+enum Companion {
+  seth
+  miriam
+}
+
+enum Product {
+  weaver
+  surfer
+  witness
+  reunion
+  scout
+  narrator
+}
+
+enum Severity {
+  error
+  warn
+  info
+}
+
+enum ServiceStatus {
+  ok
+  degraded
+  down
+}
+
+model Subscriber {
+  id              String            @id @default(cuid())
+  name            String
+  email           String            @unique
+  plan            Plan              @default(solo)
+  companion       Companion
+  status          SubscriberStatus  @default(invited)
+  joinedAt        DateTime          @default(now())
+  lastActiveAt    DateTime?
+  invitedAt       DateTime?
+  sessions        EngagementSession[]
+  photos          Photo[]
+  chapterProgress ChapterProgress[]
+  familyMembers   FamilyMember[]
+  payments        Payment[]
+  auditEvents     AuditEvent[]
+}
+
+model EngagementSession {
+  id           String     @id @default(cuid())
+  subscriberId String
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+  product      Product
+  startedAt    DateTime
+  endedAt      DateTime?
+  durationMin  Int
+  @@index([subscriberId, product])
+}
+
+model Photo {
+  id           String      @id @default(cuid())
+  subscriberId String?
+  subscriber   Subscriber? @relation(fields: [subscriberId], references: [id])
+  storageKey   String
+  source       String // "subscriber_upload" | "archive_import"
+  exifTakenAt  DateTime?
+  eraEstimated Boolean     @default(false)
+  ingestedAt   DateTime    @default(now())
+  checksumOk   Boolean     @default(true)
+  @@index([subscriberId])
+}
+
+model Chapter {
+  id       String            @id @default(cuid())
+  ordinal  Int               @unique
+  title    String
+  progress ChapterProgress[]
+}
+
+model ChapterProgress {
+  id           String     @id @default(cuid())
+  subscriberId String
+  chapterId    String
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+  chapter      Chapter    @relation(fields: [chapterId], references: [id])
+  completedAt  DateTime
+  @@unique([subscriberId, chapterId])
+}
+
+model FamilyMember {
+  id           String     @id @default(cuid())
+  subscriberId String
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+  name         String
+  relation     String // "great-grandfather", …
+  addedVia     String // e.g. "Chapter 6" or "dialogue"
+  addedAt      DateTime   @default(now())
+  source       String     @default("dialogue") // "dialogue" | "genealogy_feed" | "manual"
+  @@index([subscriberId, source])
+}
+
+model HistoricalEvent {
+  id         String   @id @default(cuid())
+  title      String
+  year       Int
+  era        String // frontier | settlement | interwar | postwar | modern | contemporary
+  sourceRef  String?
+  ingestedAt DateTime @default(now())
+  dedupeKey  String   @unique
+}
+
+model Payment {
+  id           String     @id @default(cuid())
+  subscriberId String
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+  amountCents  Int
+  paidAt       DateTime
+  refundedAt   DateTime?
+  @@index([subscriberId, paidAt])
+}
+
+model Service {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  status      ServiceStatus @default(ok)
+  note        String?
+  heartbeatAt DateTime?
+  logs        LogEvent[]
+}
+
+model LogEvent {
+  id        String   @id @default(cuid())
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  severity  Severity
+  message   String
+  meta      Json?
+  createdAt DateTime @default(now())
+  @@index([serviceId, severity, createdAt])
+}
+
+model AuditEvent {
+  id           String      @id @default(cuid())
+  actorEmail   String
+  action       String // "impersonate" | "suspend" | "reactivate" | "refund" | "cancel" | "edit_profile" | "invite"
+  subscriberId String?
+  subscriber   Subscriber? @relation(fields: [subscriberId], references: [id])
+  detail       Json?
+  createdAt    DateTime    @default(now())
+}
