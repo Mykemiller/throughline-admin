@@ -199,10 +199,12 @@ export function DetailView({ sub }: { sub: Detail }) {
                 }}
                 style={selectStyle}
               >
+                <option value="planned">Planned</option>
                 <option value="active">Active</option>
                 <option value="invited">Invited</option>
                 <option value="suspended">Suspended</option>
                 <option value="cancelled">Cancelled</option>
+                <option value="dead">Dead</option>
               </select>
             </div>
           </div>

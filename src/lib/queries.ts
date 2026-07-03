@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
+import { getBridgeCounts } from "@/lib/bridge";
 import { fmtNumber, fmtTime } from "@/lib/format";
 import { productLabel } from "@/lib/display";
 import type { Product, Severity, ServiceStatus } from "@prisma/client";
 
-export const CHAPTERS_TOTAL = 12;
 const HEARTBEAT_STALE_MS = 15 * 60 * 1000;
+
+/** Canonical chapter count comes from the Chapter table (7 real chapters). */
+export async function getChaptersTotal(): Promise<number> {
+  return Math.max(1, await prisma.chapter.count());
+}
 
 export type SubscriberRow = Awaited<ReturnType<typeof getSubscriberRows>>[number];
 
@@ -32,23 +37,36 @@ export async function getSubscriberRows() {
   }));
 }
 
-/** The four ingestion tiles shared by Overview and Sources & Logs. */
+/**
+ * The four ingestion tiles shared by Overview and Sources & Logs.
+ * Photo and family counters come from the real product data via the bridge
+ * views; the admin schema is the fallback until the bridge is installed.
+ * Historical events stay on the admin table (telemetry-fed) — no product
+ * table maps cleanly onto that concept yet.
+ */
 export async function getSourceTiles() {
-  const [photosTotal, photosFromSubs, subs, familyTotal, familyDialogue, events] = await Promise.all([
-    prisma.photo.count(),
-    prisma.photo.count({ where: { source: "subscriber_upload" } }),
-    prisma.subscriber.findMany({ select: { status: true } }),
-    prisma.familyMember.count(),
-    prisma.familyMember.count({ where: { source: "dialogue" } }),
-    prisma.historicalEvent.count(),
-  ]);
+  const [bridge, photosTotalAdmin, photosFromSubsAdmin, subs, familyTotalAdmin, familyDialogue, events] =
+    await Promise.all([
+      getBridgeCounts(),
+      prisma.photo.count(),
+      prisma.photo.count({ where: { source: "subscriber_upload" } }),
+      prisma.subscriber.findMany({ select: { status: true } }),
+      prisma.familyMember.count(),
+      prisma.familyMember.count({ where: { source: "dialogue" } }),
+      prisma.historicalEvent.count(),
+    ]);
   const active = subs.filter((s) => s.status === "active").length;
   const invited = subs.filter((s) => s.status === "invited").length;
+
+  const photosTotal = bridge ? bridge.archivePhotos + bridge.subscriberPhotos : photosTotalAdmin;
+  const photosFromSubs = bridge ? bridge.subscriberPhotos : photosFromSubsAdmin;
+  const familyTotal = bridge ? bridge.genealogyPersons + bridge.readers + familyDialogue : familyTotalAdmin;
+
   return [
     { label: "Photos ingested", value: fmtNumber(photosTotal), note: `${photosFromSubs} from subscribers · rest from archives` },
     { label: "Subscribers", value: String(subs.length), note: `${active} active · ${invited} invited` },
-    { label: "Family members ingested", value: String(familyTotal), note: `${familyDialogue} added through dialogue` },
-    { label: "Historical events", value: String(events), note: "River coverage 1800–2026" },
+    { label: "Family members ingested", value: fmtNumber(familyTotal), note: `${familyDialogue} added through dialogue` },
+    { label: "Historical events", value: fmtNumber(events), note: "River coverage 1800–2026" },
   ];
 }
 

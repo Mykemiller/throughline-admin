@@ -4,22 +4,25 @@ import { Card, CardTitle, SevPill, StatTile, Bar } from "@/components/ui";
 import { serviceDot } from "@/lib/display";
 import { fmtLogTime, fmtTime } from "@/lib/format";
 import {
-  CHAPTERS_TOTAL,
+  getChaptersTotal,
   getLogs,
   getServices,
   getSourceTiles,
   getSubscriberRows,
   healthSummary,
 } from "@/lib/queries";
+import { syncSubscribersFromProduct } from "@/lib/bridge";
 
 export const dynamic = "force-dynamic";
 
 export default async function OverviewPage() {
-  const [tiles, services, logs, subs] = await Promise.all([
+  await syncSubscribersFromProduct();
+  const [tiles, services, logs, subs, CHAPTERS_TOTAL] = await Promise.all([
     getSourceTiles(),
     getServices(),
     getLogs({ take: 50 }),
     getSubscriberRows(),
+    getChaptersTotal(),
   ]);
   const recentIssues = logs.filter((l) => l.severity !== "info").slice(0, 4);
   const topSubs = subs

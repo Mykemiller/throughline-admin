@@ -2,14 +2,20 @@ import Link from "next/link";
 import { PageFrame } from "@/components/PageFrame";
 import { Bar, Card, CardTitle, StatTile, LabeledBar } from "@/components/ui";
 import { fmtTime } from "@/lib/format";
-import { CHAPTERS_TOTAL, getProductAggregates, getSubscriberRows } from "@/lib/queries";
+import { getChaptersTotal, getProductAggregates, getSubscriberRows } from "@/lib/queries";
+import { syncSubscribersFromProduct } from "@/lib/bridge";
 
 export const dynamic = "force-dynamic";
 
 const GRID = "1fr 1.6fr 0.8fr 1.6fr 0.9fr";
 
 export default async function ProgressPage() {
-  const [subs, productAgg] = await Promise.all([getSubscriberRows(), getProductAggregates()]);
+  await syncSubscribersFromProduct();
+  const [subs, productAgg, CHAPTERS_TOTAL] = await Promise.all([
+    getSubscriberRows(),
+    getProductAggregates(),
+    getChaptersTotal(),
+  ]);
 
   const totalPhotos = subs.reduce((a, s) => a + s.photos, 0);
   const totalChapters = subs.reduce((a, s) => a + s.chapters, 0);

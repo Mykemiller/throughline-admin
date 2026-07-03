@@ -23,9 +23,12 @@ export type SubscriberListItem = {
 
 const CHIPS = [
   { v: "all", label: "All" },
+  { v: "planned", label: "Planned" },
   { v: "active", label: "Active" },
   { v: "invited", label: "Invited" },
   { v: "suspended", label: "Suspended" },
+  { v: "cancelled", label: "Cancelled" },
+  { v: "dead", label: "Dead" },
 ] as const;
 
 const GRID = "1.1fr 1.7fr 0.8fr 0.9fr 0.9fr 0.7fr 0.9fr 0.9fr";

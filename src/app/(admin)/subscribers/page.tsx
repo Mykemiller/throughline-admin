@@ -1,13 +1,15 @@
 import { PageFrame } from "@/components/PageFrame";
 import { companionLabel, planLabel } from "@/lib/display";
 import { fmtLastActive, fmtShortDate } from "@/lib/format";
-import { CHAPTERS_TOTAL, getSubscriberRows } from "@/lib/queries";
+import { getChaptersTotal, getSubscriberRows } from "@/lib/queries";
+import { syncSubscribersFromProduct } from "@/lib/bridge";
 import { SubscribersView, type SubscriberListItem } from "./SubscribersView";
 
 export const dynamic = "force-dynamic";
 
 export default async function SubscribersPage() {
-  const rows = await getSubscriberRows();
+  await syncSubscribersFromProduct();
+  const [rows, CHAPTERS_TOTAL] = await Promise.all([getSubscriberRows(), getChaptersTotal()]);
   const items: SubscriberListItem[] = rows.map((s) => ({
     id: s.id,
     name: s.name,

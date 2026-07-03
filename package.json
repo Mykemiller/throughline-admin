@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
+    "seed:demo": "tsx prisma/seed-demo.ts",
     "simulate": "tsx scripts/simulate.ts",
     "migrate": "prisma migrate deploy",
     "e2e": "playwright test",

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 const PLANS: Plan[] = ["founding", "family", "solo"];
 const COMPANIONS: Companion[] = ["seth", "miriam"];
-const STATUSES: SubscriberStatus[] = ["active", "invited", "suspended", "cancelled"];
+const STATUSES: SubscriberStatus[] = ["planned", "active", "invited", "suspended", "cancelled", "dead"];
 
 export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;

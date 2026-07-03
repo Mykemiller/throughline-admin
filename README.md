@@ -21,7 +21,8 @@ pnpm install
 docker compose up -d          # local Postgres on :5433
 cp env.example .env           # fill in values (see below)
 pnpm prisma migrate deploy    # or `pnpm prisma migrate dev` while developing
-pnpm seed                     # idempotent; recreates the prototype dataset
+pnpm seed                     # production bootstrap: steward, 7 chapters, service registry
+pnpm seed:demo                # OR: the full design-prototype demo dataset (destructive)
 pnpm dev
 ```
 
@@ -45,6 +46,16 @@ Note: the env template is `env.example` (no leading dot) so tooling never confus
 Email + password at `/login`. Stewards live in the `AdminUser` table (scrypt-hashed passwords); the seed creates the sole authorized steward if missing and **never resets an existing password**. Passwords are changed in the **Account** screen (click the user row at the bottom of the sidebar), which also has sign-out.
 
 Sessions are 7-day httpOnly JWT cookies with role `steward`. Everything except `/login`, `/api/auth/*`, and `/api/ingest/*` requires one.
+
+## Real product data (the bridge)
+
+Overview/Sources counters and the subscriber list draw from the real Throughline product tables through two **read-only views** — `admin.bridge_counts` and `admin.bridge_subscribers` (definition: [`foundry/sql/bridge-views.sql`](foundry/sql/bridge-views.sql), run once as `postgres`). The app role can `SELECT` those views only; it has no grants on `public` tables. Until the views exist, everything degrades gracefully to admin-schema data.
+
+- **Sync**: each admin page upserts product subscribers into the admin schema. Product owns `name`/`email` (refreshed every sync) and supplies first-import plan/companion/status (`profile_complete` ⇒ Active, else Invited). After import, **plan, companion, and status belong to the steward** — product changes never overwrite them.
+- **Plan mapping**: `MVP` → Founding · `family` → Family · `standard` (or unknown) → Solo.
+- **Statuses**: Planned · Active · Invited · Suspended · Cancelled · Dead. Sync derives only Active/Invited; the rest are set in the console.
+- **Chapters**: the 7 real chapters (First Light → Last Night) live in the `Chapter` table; totals are derived, never hard-coded. `public.subscribers.chapter_progress` contract: JSON object keyed by ordinal (`{"3": true}`) or slugged title (`{"the_school_years": true}`), truthy = complete.
+- **Not bridged (telemetry-fed instead)**: time engaged, per-subscriber photos, logs, service health, historical events.
 
 ## Telemetry contract (for product teams)
 
@@ -86,6 +97,8 @@ Every admin mutation writes an `AuditEvent` (actor, action, subscriber, detail).
 ```bash
 E2E_ADMIN_EMAIL=<email> E2E_ADMIN_PASSWORD=<password> pnpm e2e   # happy path: search → open → suspend → toast → log filter
 ```
+
+The happy path expects the demo dataset (`pnpm seed:demo`) — run it against local Postgres, not production.
 
 ## Conventions
 

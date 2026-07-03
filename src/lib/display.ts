@@ -1,10 +1,12 @@
 import type { Companion, Plan, Product, Severity, SubscriberStatus } from "@prisma/client";
 
 export const statusPill: Record<SubscriberStatus, { bg: string; color: string; label: string }> = {
+  planned: { bg: "rgba(91,143,168,0.20)", color: "#3E637A", label: "Planned" },
   active: { bg: "rgba(74,124,89,0.18)", color: "#31573E", label: "Active" },
   invited: { bg: "rgba(196,135,58,0.20)", color: "#8A5D24", label: "Invited" },
   suspended: { bg: "rgba(107,76,42,0.20)", color: "#6B4C2A", label: "Suspended" },
   cancelled: { bg: "rgba(122,115,106,0.20)", color: "#7A736A", label: "Cancelled" },
+  dead: { bg: "rgba(30,42,58,0.18)", color: "#1E2A3A", label: "Dead" },
 };
 
 export const sevPill: Record<Severity, { bg: string; color: string }> = {

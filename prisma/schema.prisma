@@ -9,10 +9,12 @@ datasource db {
 }
 
 enum SubscriberStatus {
+  planned
   active
   invited
   suspended
   cancelled
+  dead
 }
 
 enum Plan {
@@ -57,6 +59,7 @@ model AdminUser {
 
 model Subscriber {
   id              String            @id @default(cuid())
+  productId       String?           @unique // public.subscribers.subscriber_id, set by the bridge sync
   name            String
   email           String            @unique
   plan            Plan              @default(solo)

@@ -2,13 +2,15 @@ import { notFound } from "next/navigation";
 import { PageFrame } from "@/components/PageFrame";
 import { prisma } from "@/lib/prisma";
 import { fmtJoined, fmtLastActive, fmtShortDate, fmtTime } from "@/lib/format";
-import { CHAPTERS_TOTAL, getSubscriberProducts } from "@/lib/queries";
+import { getChaptersTotal, getSubscriberProducts } from "@/lib/queries";
+import { syncSubscribersFromProduct } from "@/lib/bridge";
 import { DetailView } from "./DetailView";
 
 export const dynamic = "force-dynamic";
 
 export default async function SubscriberDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  await syncSubscribersFromProduct();
   const sub = await prisma.subscriber.findUnique({
     where: { id },
     include: {
@@ -17,12 +19,13 @@ export default async function SubscriberDetailPage({ params }: { params: Promise
   });
   if (!sub) notFound();
 
-  const [subCount, minutes, photos, chapters, productRows] = await Promise.all([
+  const [subCount, minutes, photos, chapters, productRows, CHAPTERS_TOTAL] = await Promise.all([
     prisma.subscriber.count(),
     prisma.engagementSession.aggregate({ where: { subscriberId: id }, _sum: { durationMin: true } }),
     prisma.photo.count({ where: { subscriberId: id } }),
     prisma.chapterProgress.count({ where: { subscriberId: id } }),
     getSubscriberProducts(id),
+    getChaptersTotal(),
   ]);
   const mins = minutes._sum.durationMin ?? 0;
 
