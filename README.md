@@ -36,7 +36,7 @@ Note: the env template is `env.example` (no leading dot) so tooling never confus
 | `DIRECT_URL` | Migrations/seed URL. Production: Supabase **session pooler** (`:5432`) with `?schema=admin` |
 | `AUTH_SECRET` | Signs steward sessions and impersonation tokens |
 | `SERVICE_TOKENS` | Telemetry bearer tokens, `slug:token` comma-separated (slugs below) |
-| `RESEND_API_KEY` / `EMAIL_FROM` | Optional. When set, invitation letters are actually delivered; otherwise the mailer logs them server-side |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Optional. When set, invitation letters are actually delivered; otherwise the mailer logs them server-side. Activate everything (domain, DNS, verification, env, redeploy, test letter) with `RESEND_API_KEY=re_xxx pnpm setup:resend` |
 | `STRIPE_SECRET_KEY` | Optional. When set, refunds hit Stripe; otherwise a stub provider records them |
 | `NEXT_PUBLIC_APP_URL` | Base URL used in emailed links |
 | `ADMIN_TIMEZONE` | Display TZ for "today, 9:12a" formatting (default `America/Los_Angeles`) |
