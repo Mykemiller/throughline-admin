@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F2E6BC; }
+  * { box-sizing:border-box; }
+  input, select, button, textarea { font-family:inherit; }
+  input:focus, select:focus { outline:2px solid #C4873A; outline-offset:1px; }
+  ::placeholder { color:#7A736A; opacity:0.7; }
+  @keyframes brookFlow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+</style>
+</helmet>
+<div style="display:flex; height:100vh; overflow:hidden; font-family:Inter,system-ui,sans-serif; color:#1C1712; background:radial-gradient(ellipse 900px 500px at 85% -10%, rgba(74,124,89,0.10), rgba(74,124,89,0) 70%), radial-gradient(ellipse 800px 600px at -10% 110%, rgba(196,135,58,0.08), rgba(196,135,58,0) 65%), linear-gradient(165deg, #F2E6BC 0%, #EFE3B6 60%, #EADEAC 100%)">
+
+  <!-- ============ Sidebar ============ -->
+  <div style="width:236px; flex-shrink:0; background:#1E2A3A; color:#F2E6BC; display:flex; flex-direction:column; padding:22px 14px 16px">
+    <div style="padding:0 10px 22px">
+      <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:22px; letter-spacing:0.02em">Throughline</div>
+      <div style="font-family:Lora,Georgia,serif; font-size:13px; color:#C4873A; margin-top:2px; letter-spacing:0.06em">Administrator</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:2px">
+      <sc-for list="{{navItems}}" as="n" hint-placeholder-count="4">
+        <div onClick="{{n.go}}" style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:500; background:{{n.bg}}; color:{{n.color}}" style-hover="background:rgba(242,230,188,0.10)">
+          <div style="width:7px; height:7px; border-radius:50%; flex-shrink:0; background:{{n.dot}}"></div>
+          <div style="flex:1">{{n.label}}</div>
+          <sc-if value="{{n.badge}}" hint-placeholder-val="{{false}}">
+            <div style="font-size:11px; font-weight:600; background:#6B4C2A; color:#F2E6BC; border-radius:99px; padding:1px 8px">{{n.badge}}</div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <div style="flex:1"></div>
+    <div style="height:3px; border-radius:2px; margin:0 10px 14px; background:linear-gradient(90deg, rgba(91,143,168,0.2), #5B8FA8, rgba(91,143,168,0.3), #5B8FA8, rgba(91,143,168,0.2)); background-size:300% 100%; animation:brookFlow 11s ease-in-out infinite"></div>
+    <div style="padding:0 10px; display:flex; align-items:center; gap:10px">
+      <div style="width:30px; height:30px; border-radius:50%; background:#C4873A; color:#1E2A3A; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px">m</div>
+      <div>
+        <div style="font-size:13px; font-weight:500">myke</div>
+        <div style="font-size:11px; color:#7A736A">steward · {{envLabel}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Main ============ -->
+  <div style="flex:1; display:flex; flex-direction:column; min-width:0">
+    <div style="padding:22px 30px 14px; display:flex; align-items:baseline; gap:14px; border-bottom:1px solid #D4CDBF">
+      <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:25px">{{sectionTitle}}</div>
+      <div style="font-size:13px; color:#7A736A">{{sectionSub}}</div>
+      <div style="flex:1"></div>
+      <div style="font-size:12px; color:#7A736A">Friday, July 3, 2026</div>
+    </div>
+
+    <div style="flex:1; overflow:auto; padding:22px 30px 48px">
+
+      <!-- ============ OVERVIEW ============ -->
+      <sc-if value="{{showDashboard}}" hint-placeholder-val="{{true}}">
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px">
+          <sc-for list="{{sourceTiles}}" as="t" hint-placeholder-count="4">
+            <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px 18px 16px">
+              <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">{{t.label}}</div>
+              <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:34px; margin-top:6px">{{t.value}}</div>
+              <div style="font-size:12px; color:#6B4C2A; margin-top:4px">{{t.note}}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:14px; margin-top:14px">
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px">
+            <div style="display:flex; align-items:baseline; gap:10px">
+              <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Service health</div>
+              <div style="font-size:12px; color:#7A736A">{{healthSummary}}</div>
+              <div style="flex:1"></div>
+              <div onClick="{{goSources}}" style="font-size:12px; font-weight:500; color:#6B4C2A; cursor:pointer; text-decoration:underline">All sources →</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:14px">
+              <sc-for list="{{services}}" as="sv" hint-placeholder-count="9">
+                <div onClick="{{sv.pick}}" style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:8px; background:#F2E6BC; border:1px solid #D4CDBF; cursor:pointer" style-hover="border-color:#C4873A">
+                  <div style="width:8px; height:8px; border-radius:50%; flex-shrink:0; background:{{sv.dot}}"></div>
+                  <div style="min-width:0">
+                    <div style="font-size:12.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{sv.name}}</div>
+                    <div style="font-size:11px; color:#7A736A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{sv.statusLabel}}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px">
+            <div style="display:flex; align-items:baseline; gap:10px">
+              <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Needs attention</div>
+              <div style="flex:1"></div>
+              <div onClick="{{goSources}}" style="font-size:12px; font-weight:500; color:#6B4C2A; cursor:pointer; text-decoration:underline">Full log →</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px">
+              <sc-for list="{{recentIssues}}" as="iss" hint-placeholder-count="4">
+                <div style="display:flex; gap:10px; align-items:flex-start">
+                  <div style="font-size:10px; font-weight:600; letter-spacing:0.06em; padding:2px 7px; border-radius:99px; margin-top:1px; background:{{iss.pillBg}}; color:{{iss.pillColor}}">{{iss.sev}}</div>
+                  <div style="min-width:0">
+                    <div style="font-size:13px; line-height:1.45">{{iss.msg}}</div>
+                    <div style="font-size:11px; color:#7A736A; margin-top:2px">{{iss.source}} · {{iss.time}}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px; margin-top:14px">
+          <div style="display:flex; align-items:baseline; gap:10px">
+            <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">On the path this week</div>
+            <div style="font-size:12px; color:#7A736A">most engaged subscribers</div>
+            <div style="flex:1"></div>
+            <div onClick="{{goProgress}}" style="font-size:12px; font-weight:500; color:#6B4C2A; cursor:pointer; text-decoration:underline">All progress →</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:14px">
+            <sc-for list="{{topSubs}}" as="s" hint-placeholder-count="4">
+              <div onClick="{{s.open}}" style="background:#F2E6BC; border:1px solid #D4CDBF; border-radius:10px; padding:14px; cursor:pointer" style-hover="border-color:#C4873A">
+                <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:16px">{{s.name}}</div>
+                <div style="font-size:11.5px; color:#7A736A; margin-top:2px">with {{s.companion}} · {{s.engagedLabel}}</div>
+                <div style="height:5px; border-radius:3px; background:#D4CDBF; margin-top:12px; overflow:hidden">
+                  <div style="height:100%; border-radius:3px; background:#C4873A; width:{{s.chaptersPct}}%"></div>
+                </div>
+                <div style="font-size:11px; color:#6B4C2A; margin-top:5px">{{s.chaptersLabel}} · {{s.photos}} photographs</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ SUBSCRIBERS: LIST ============ -->
+      <sc-if value="{{showSubList}}" hint-placeholder-val="{{false}}">
+        <div style="display:flex; gap:10px; align-items:center">
+          <input value="{{query}}" onChange="{{setQuery}}" placeholder="Search by name or email…" style="width:280px; padding:9px 13px; border-radius:8px; border:1px solid #D4CDBF; background:#EDE4D0; font-size:13.5px; color:#1C1712">
+          <div style="display:flex; gap:6px">
+            <sc-for list="{{statusChips}}" as="c" hint-placeholder-count="4">
+              <div onClick="{{c.go}}" style="padding:7px 13px; border-radius:99px; font-size:12.5px; font-weight:500; cursor:pointer; border:1px solid {{c.border}}; background:{{c.bg}}; color:{{c.color}}">{{c.label}}</div>
+            </sc-for>
+          </div>
+          <div style="flex:1"></div>
+          <button onClick="{{openInvite}}" style="padding:9px 18px; border-radius:8px; border:none; cursor:pointer; background:#C4873A; color:#1C1712; font-weight:600; font-size:13.5px" style-hover="background:#B37A31">+ Invite a subscriber</button>
+        </div>
+
+        <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; margin-top:14px; overflow:hidden">
+          <div style="display:grid; grid-template-columns:1.1fr 1.7fr 0.8fr 0.9fr 0.9fr 0.7fr 0.9fr 0.9fr; gap:10px; padding:11px 18px; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#7A736A; border-bottom:1px solid #D4CDBF">
+            <div>Subscriber</div><div>Email</div><div>Plan</div><div>Companion</div><div>Status</div><div>Photos</div><div>Chapters</div><div>Last active</div>
+          </div>
+          <sc-for list="{{filteredSubs}}" as="s" hint-placeholder-count="6">
+            <div onClick="{{s.open}}" style="display:grid; grid-template-columns:1.1fr 1.7fr 0.8fr 0.9fr 0.9fr 0.7fr 0.9fr 0.9fr; gap:10px; align-items:center; padding:12px 18px; font-size:13.5px; cursor:pointer; border-bottom:1px solid rgba(212,205,191,0.55)" style-hover="background:#F2E6BC">
+              <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:15px">{{s.name}}</div>
+              <div style="color:#7A736A; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{s.email}}</div>
+              <div>{{s.plan}}</div>
+              <div>{{s.companion}}</div>
+              <div><span style="font-size:11px; font-weight:600; padding:3px 10px; border-radius:99px; background:{{s.pillBg}}; color:{{s.pillColor}}">{{s.statusLabel}}</span></div>
+              <div>{{s.photos}}</div>
+              <div style="display:flex; align-items:center; gap:8px">
+                <div style="flex:1; max-width:52px; height:5px; border-radius:3px; background:#D4CDBF; overflow:hidden"><div style="height:100%; background:#C4873A; width:{{s.chaptersPct}}%"></div></div>
+                <span style="font-size:12px; color:#6B4C2A">{{s.chaptersShort}}</span>
+              </div>
+              <div style="font-size:12.5px; color:#7A736A">{{s.lastActive}}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{noResults}}" hint-placeholder-val="{{false}}">
+            <div style="padding:28px; font-size:13.5px; color:#7A736A; font-style:italic">No one on the path by that name. Try a different search.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ SUBSCRIBERS: DETAIL ============ -->
+      <sc-if value="{{showSubDetail}}" hint-placeholder-val="{{false}}">
+        <div onClick="{{back}}" style="display:inline-block; font-size:13px; font-weight:500; color:#6B4C2A; cursor:pointer; margin-bottom:14px">← All subscribers</div>
+
+        <div style="display:flex; align-items:center; gap:16px">
+          <div style="width:52px; height:52px; border-radius:50%; background:#1E2A3A; color:#F2E6BC; display:flex; align-items:center; justify-content:center; font-family:Lora,Georgia,serif; font-weight:600; font-size:22px">{{sel.initial}}</div>
+          <div>
+            <div style="display:flex; align-items:center; gap:12px">
+              <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:26px">{{sel.name}}</div>
+              <span style="font-size:11px; font-weight:600; padding:3px 10px; border-radius:99px; background:{{sel.pillBg}}; color:{{sel.pillColor}}">{{sel.statusLabel}}</span>
+            </div>
+            <div style="font-size:13px; color:#7A736A; margin-top:2px">{{sel.email}} · joined {{sel.joined}} · last active {{sel.lastActive}}</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:20px">
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:16px">
+            <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">Time on the path</div>
+            <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:28px; margin-top:6px">{{sel.engagedLabel}}</div>
+            <div style="font-size:12px; color:#6B4C2A; margin-top:2px">across all products</div>
+          </div>
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:16px">
+            <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">Photographs attached</div>
+            <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:28px; margin-top:6px">{{sel.photos}}</div>
+            <div style="font-size:12px; color:#6B4C2A; margin-top:2px">stones placed in the River</div>
+          </div>
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:16px">
+            <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">Chapters completed</div>
+            <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:28px; margin-top:6px">{{sel.chaptersLabel}}</div>
+            <div style="height:5px; border-radius:3px; background:#D4CDBF; margin-top:8px; overflow:hidden"><div style="height:100%; background:#C4873A; width:{{sel.chaptersPct}}%"></div></div>
+          </div>
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:16px">
+            <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">People added</div>
+            <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:28px; margin-top:6px">{{sel.peopleCount}}</div>
+            <div style="font-size:12px; color:#6B4C2A; margin-top:2px">through dialogue with {{sel.companion}}</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1.2fr 1fr; gap:14px; margin-top:14px">
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px">
+            <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Profile</div>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px">
+              <div>
+                <div style="font-size:11.5px; font-weight:500; color:#7A736A; margin-bottom:4px">Plan</div>
+                <select value="{{sel.plan}}" onChange="{{sel.setPlan}}" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #D4CDBF; background:#F2E6BC; font-size:13.5px; color:#1C1712">
+                  <option value="Founding">Founding</option>
+                  <option value="Family">Family</option>
+                  <option value="Solo">Solo</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:11.5px; font-weight:500; color:#7A736A; margin-bottom:4px">Companion</div>
+                <select value="{{sel.companion}}" onChange="{{sel.setCompanion}}" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #D4CDBF; background:#F2E6BC; font-size:13.5px; color:#1C1712">
+                  <option value="Seth">Seth</option>
+                  <option value="Miriam">Miriam</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:11.5px; font-weight:500; color:#7A736A; margin-bottom:4px">Status</div>
+                <select value="{{sel.status}}" onChange="{{sel.setStatus}}" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #D4CDBF; background:#F2E6BC; font-size:13.5px; color:#1C1712">
+                  <option value="active">Active</option>
+                  <option value="invited">Invited</option>
+                  <option value="suspended">Suspended</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div style="border-top:1px solid #D4CDBF; margin-top:16px; padding-top:14px">
+              <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">Actions</div>
+              <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px">
+                <button onClick="{{impersonate}}" style="padding:9px 12px; border-radius:8px; border:none; cursor:pointer; background:#C4873A; color:#1C1712; font-weight:600; font-size:13px" style-hover="background:#B37A31">View as {{sel.name}}</button>
+                <button onClick="{{toggleSuspend}}" style="padding:9px 12px; border-radius:8px; border:1px solid #6B4C2A; cursor:pointer; background:transparent; color:#6B4C2A; font-weight:600; font-size:13px" style-hover="background:rgba(107,76,42,0.08)">{{suspendLabel}}</button>
+                <button onClick="{{refund}}" style="padding:9px 12px; border-radius:8px; border:1px solid #6B4C2A; cursor:pointer; background:transparent; color:#6B4C2A; font-weight:600; font-size:13px" style-hover="background:rgba(107,76,42,0.08)">Refund last payment</button>
+                <button onClick="{{cancelSub}}" style="padding:9px 12px; border-radius:8px; border:1px solid #D4CDBF; cursor:pointer; background:transparent; color:#7A736A; font-weight:600; font-size:13px" style-hover="border-color:#6B4C2A; color:#6B4C2A">Cancel subscription</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px">
+            <div style="display:flex; align-items:baseline; gap:10px">
+              <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Family added through dialogue</div>
+            </div>
+            <sc-if value="{{sel.hasPeople}}" hint-placeholder-val="{{true}}">
+              <div style="display:flex; flex-direction:column; margin-top:10px">
+                <sc-for list="{{sel.people}}" as="p" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(212,205,191,0.55)">
+                    <div style="width:32px; height:32px; border-radius:50%; background:#4A7C59; color:#F2E6BC; display:flex; align-items:center; justify-content:center; font-family:Lora,Georgia,serif; font-size:14px">{{p.initial}}</div>
+                    <div style="flex:1; min-width:0">
+                      <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:14.5px">{{p.name}}</div>
+                      <div style="font-size:12px; color:#7A736A">{{p.relation}}</div>
+                    </div>
+                    <div style="font-size:11.5px; color:#7A736A; text-align:right">added {{p.date}}<br>in {{p.via}}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{sel.noPeople}}" hint-placeholder-val="{{false}}">
+              <div style="font-size:13px; color:#7A736A; font-style:italic; margin-top:12px">No one yet. The walk hasn't started.</div>
+            </sc-if>
+          </div>
+
+          <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px">
+            <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Time by product</div>
+            <div style="display:flex; flex-direction:column; gap:11px; margin-top:14px">
+              <sc-for list="{{sel.productRows}}" as="pr" hint-placeholder-count="6">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:4px">
+                    <span style="font-weight:500">{{pr.name}}</span>
+                    <span style="color:#7A736A">{{pr.label}}</span>
+                  </div>
+                  <div style="height:5px; border-radius:3px; background:#D4CDBF; overflow:hidden"><div style="height:100%; background:#4A7C59; width:{{pr.pct}}%"></div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ PROGRESS ============ -->
+      <sc-if value="{{showProgress}}" hint-placeholder-val="{{false}}">
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px">
+          <sc-for list="{{progressTiles}}" as="t" hint-placeholder-count="3">
+            <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px 18px 16px">
+              <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">{{t.label}}</div>
+              <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:34px; margin-top:6px">{{t.value}}</div>
+              <div style="font-size:12px; color:#6B4C2A; margin-top:4px">{{t.note}}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; margin-top:14px; overflow:hidden">
+          <div style="display:grid; grid-template-columns:1fr 1.6fr 0.8fr 1.6fr 0.9fr; gap:14px; padding:11px 18px; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#7A736A; border-bottom:1px solid #D4CDBF">
+            <div>Subscriber</div><div>Time engaged</div><div>Photographs</div><div>Chapters</div><div>People added</div>
+          </div>
+          <sc-for list="{{progressRows}}" as="s" hint-placeholder-count="8">
+            <div onClick="{{s.open}}" style="display:grid; grid-template-columns:1fr 1.6fr 0.8fr 1.6fr 0.9fr; gap:14px; align-items:center; padding:13px 18px; font-size:13.5px; cursor:pointer; border-bottom:1px solid rgba(212,205,191,0.55)" style-hover="background:#F2E6BC">
+              <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:15px">{{s.name}}</div>
+              <div style="display:flex; align-items:center; gap:10px">
+                <div style="flex:1; height:6px; border-radius:3px; background:#D4CDBF; overflow:hidden"><div style="height:100%; background:#4A7C59; width:{{s.engagedPct}}%"></div></div>
+                <span style="font-size:12.5px; color:#6B4C2A; width:58px">{{s.engagedLabel}}</span>
+              </div>
+              <div>{{s.photos}}</div>
+              <div style="display:flex; align-items:center; gap:10px">
+                <div style="flex:1; height:6px; border-radius:3px; background:#D4CDBF; overflow:hidden"><div style="height:100%; background:#C4873A; width:{{s.chaptersPct}}%"></div></div>
+                <span style="font-size:12.5px; color:#6B4C2A; width:44px">{{s.chaptersShort}}</span>
+              </div>
+              <div>{{s.peopleCount}}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px; margin-top:14px">
+          <div style="display:flex; align-items:baseline; gap:10px">
+            <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Engagement by product</div>
+            <div style="font-size:12px; color:#7A736A">all subscribers, total time</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:11px; margin-top:14px; max-width:560px">
+            <sc-for list="{{productAgg}}" as="pr" hint-placeholder-count="6">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:4px">
+                  <span style="font-weight:500">{{pr.name}}</span>
+                  <span style="color:#7A736A">{{pr.label}}</span>
+                </div>
+                <div style="height:6px; border-radius:3px; background:#D4CDBF; overflow:hidden"><div style="height:100%; background:#5B8FA8; width:{{pr.pct}}%"></div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ SOURCES & LOGS ============ -->
+      <sc-if value="{{showSources}}" hint-placeholder-val="{{false}}">
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px">
+          <sc-for list="{{sourceTiles}}" as="t" hint-placeholder-count="4">
+            <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px 18px 16px">
+              <div style="font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#7A736A">{{t.label}}</div>
+              <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:34px; margin-top:6px">{{t.value}}</div>
+              <div style="font-size:12px; color:#6B4C2A; margin-top:4px">{{t.note}}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px; margin-top:14px">
+          <div style="display:flex; align-items:baseline; gap:10px">
+            <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Service health</div>
+            <div style="font-size:12px; color:#7A736A">{{healthSummary}} · click a service to filter its log</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:14px">
+            <sc-for list="{{services}}" as="sv" hint-placeholder-count="9">
+              <div onClick="{{sv.pick}}" style="display:flex; align-items:flex-start; gap:10px; padding:12px; border-radius:10px; background:#F2E6BC; cursor:pointer; border:1px solid {{sv.border}}" style-hover="border-color:#C4873A">
+                <div style="width:9px; height:9px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{sv.dot}}"></div>
+                <div style="min-width:0">
+                  <div style="font-size:13.5px; font-weight:600">{{sv.name}}</div>
+                  <div style="font-size:12px; color:#7A736A; margin-top:2px; line-height:1.4">{{sv.note}}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:#EDE4D0; border:1px solid #D4CDBF; border-radius:12px; padding:18px; margin-top:14px">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+            <div style="font-family:Lora,Georgia,serif; font-weight:600; font-size:17px">Error log</div>
+            <div style="flex:1"></div>
+            <div style="display:flex; gap:6px">
+              <sc-for list="{{sevChips}}" as="c" hint-placeholder-count="4">
+                <div onClick="{{c.go}}" style="padding:6px 12px; border-radius:99px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid {{c.border}}; background:{{c.bg}}; color:{{c.color}}">{{c.label}}</div>
+              </sc-for>
+            </div>
+            <select value="{{logSource}}" onChange="{{setLogSource}}" style="padding:7px 10px; border-radius:8px; border:1px solid #D4CDBF; background:#F2E6BC; font-size:12.5px; color:#1C1712">
+              <sc-for list="{{logSourceOptions}}" as="o" hint-placeholder-count="5">
+                <option value="{{o.v}}">{{o.label}}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div style="margin-top:14px; border-top:1px solid #D4CDBF">
+            <sc-for list="{{filteredLogs}}" as="lg" hint-placeholder-count="8">
+              <div style="display:grid; grid-template-columns:64px 76px 150px 1fr; gap:12px; align-items:baseline; padding:10px 4px; border-bottom:1px solid rgba(212,205,191,0.55); font-size:13px">
+                <div style="font-size:12px; color:#7A736A">{{lg.time}}</div>
+                <div><span style="font-size:10px; font-weight:600; letter-spacing:0.06em; padding:2px 8px; border-radius:99px; background:{{lg.pillBg}}; color:{{lg.pillColor}}">{{lg.sev}}</span></div>
+                <div style="font-size:12.5px; font-weight:500">{{lg.source}}</div>
+                <div style="line-height:1.45">{{lg.msg}}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{noLogs}}" hint-placeholder-val="{{false}}">
+              <div style="padding:24px 4px; font-size:13px; color:#7A736A; font-style:italic">Nothing in the log for that filter. Quiet water.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- ============ Invite modal ============ -->
+  <sc-if value="{{showInvite}}" hint-placeholder-val="{{false}}">
+    <div onClick="{{closeInvite}}" style="position:fixed; inset:0; background:rgba(28,23,18,0.45); display:flex; align-items:center; justify-content:center; z-index:50">
+      <div onClick="{{stop}}" style="width:420px; background:#F2E6BC; border:1px solid #D4CDBF; border-radius:14px; padding:26px; box-shadow:0 20px 60px rgba(28,23,18,0.35)">
+        <div style="font-family:Lora,Georgia,serif; font-weight:700; font-size:21px">Invite someone to the path</div>
+        <div style="font-size:13px; color:#7A736A; margin-top:4px; line-height:1.5">They'll receive a letter, not a link-blast. Their companion is chosen when they arrive.</div>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:18px">
+          <div>
+            <div style="font-size:11.5px; font-weight:500; color:#7A736A; margin-bottom:4px">Name</div>
+            <input value="{{inviteName}}" onChange="{{setInviteName}}" placeholder="e.g. june" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid #D4CDBF; background:#EDE4D0; font-size:13.5px; color:#1C1712">
+          </div>
+          <div>
+            <div style="font-size:11.5px; font-weight:500; color:#7A736A; margin-bottom:4px">Email</div>
+            <input value="{{inviteEmail}}" onChange="{{setInviteEmail}}" placeholder="name@example.com" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid #D4CDBF; background:#EDE4D0; font-size:13.5px; color:#1C1712">
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px">
+          <button onClick="{{closeInvite}}" style="padding:9px 16px; border-radius:8px; border:1px solid #D4CDBF; background:transparent; cursor:pointer; color:#7A736A; font-weight:500; font-size:13px">Not now</button>
+          <button onClick="{{sendInvite}}" style="padding:9px 18px; border-radius:8px; border:none; cursor:pointer; background:#C4873A; color:#1C1712; font-weight:600; font-size:13px" style-hover="background:#B37A31">Send invitation</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ Toast ============ -->
+  <sc-if value="{{toastMsg}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:#1E2A3A; color:#F2E6BC; padding:11px 20px; border-radius:10px; font-size:13.5px; box-shadow:0 8px 30px rgba(28,23,18,0.3); z-index:60">{{toastMsg}}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440, &quot;height&quot;: 900}, &quot;chaptersTotal&quot;: {&quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 12, &quot;tsType&quot;: &quot;number&quot;, &quot;min&quot;: 1, &quot;max&quot;: 40, &quot;section&quot;: &quot;Content&quot;}, &quot;environment&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;production&quot;, &quot;options&quot;: [&quot;production&quot;, &quot;staging&quot;, &quot;dev&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;System&quot;}}">
+class Component extends DCLogic {
+  state = {
+    section: 'dashboard',
+    selectedId: null,
+    query: '',
+    statusFilter: 'all',
+    logSev: 'all',
+    logSource: 'all',
+    toastMsg: '',
+    showInvite: false,
+    inviteName: '',
+    inviteEmail: '',
+    subs: [
+      { id: 1, name: 'myke', email: 'myke@throughline.family', plan: 'Founding', companion: 'Miriam', status: 'active', minutes: 1840, photos: 214, chapters: 9, joined: 'Jan 12, 2026', lastActive: 'today, 9:12a',
+        people: [
+          { name: 'Frederick Bull', relation: 'great-grandfather', via: 'Chapter 6', date: 'Jun 28' },
+          { name: 'Fannie Bull', relation: 'great-grandmother', via: 'Chapter 6', date: 'Jun 28' },
+          { name: 'Thomas Bull', relation: 'great-great-grandfather', via: 'Chapter 8', date: 'Jul 1' }
+        ],
+        products: { Weaver: 820, Surfer: 340, Witness: 260, Reunion: 140, Scout: 110, 'Companion (Narrator)': 170 } },
+      { id: 2, name: 'mom', email: 'mom@throughline.family', plan: 'Family', companion: 'Seth', status: 'active', minutes: 2210, photos: 187, chapters: 11, joined: 'Jan 12, 2026', lastActive: 'today, 7:48a',
+        people: [
+          { name: 'Harold', relation: 'father', via: 'Chapter 3', date: 'Mar 4' },
+          { name: 'Ruth', relation: 'mother', via: 'Chapter 3', date: 'Mar 4' },
+          { name: 'Evelyn', relation: 'sister', via: 'Chapter 9', date: 'Jun 14' }
+        ],
+        products: { Weaver: 760, Surfer: 180, Witness: 890, Reunion: 190, Scout: 60, 'Companion (Narrator)': 130 } },
+      { id: 3, name: 'mark', email: 'mark@throughline.family', plan: 'Family', companion: 'Miriam', status: 'active', minutes: 960, photos: 96, chapters: 6, joined: 'Feb 2, 2026', lastActive: 'today, 7:21a',
+        people: [ { name: 'Walter', relation: 'grandfather', via: 'Chapter 4', date: 'Apr 19' } ],
+        products: { Weaver: 410, Surfer: 220, Witness: 120, Reunion: 130, Scout: 40, 'Companion (Narrator)': 40 } },
+      { id: 4, name: 'lynn', email: 'lynn@throughline.family', plan: 'Family', companion: 'Seth', status: 'active', minutes: 1310, photos: 142, chapters: 8, joined: 'Feb 2, 2026', lastActive: 'yesterday, 8:02p',
+        people: [
+          { name: 'Edith', relation: 'grandmother', via: 'Chapter 5', date: 'May 2' },
+          { name: 'June', relation: 'aunt', via: 'Chapter 7', date: 'Jun 9' }
+        ],
+        products: { Weaver: 520, Surfer: 310, Witness: 280, Reunion: 90, Scout: 60, 'Companion (Narrator)': 50 } },
+      { id: 5, name: 'june', email: 'june.h@gmail.com', plan: 'Solo', companion: 'Seth', status: 'active', minutes: 540, photos: 45, chapters: 4, joined: 'Mar 15, 2026', lastActive: 'Jun 30',
+        people: [ { name: 'Dorothy', relation: 'mother', via: 'Chapter 2', date: 'Apr 3' } ],
+        products: { Weaver: 260, Surfer: 0, Witness: 160, Reunion: 40, Scout: 50, 'Companion (Narrator)': 30 } },
+      { id: 6, name: 'sara', email: 'sara.w@gmail.com', plan: 'Solo', companion: 'Seth', status: 'active', minutes: 380, photos: 61, chapters: 3, joined: 'Apr 8, 2026', lastActive: 'Jul 1',
+        people: [],
+        products: { Weaver: 210, Surfer: 0, Witness: 90, Reunion: 0, Scout: 50, 'Companion (Narrator)': 30 } },
+      { id: 7, name: 'paul', email: 'paul.d@gmail.com', plan: 'Solo', companion: 'Miriam', status: 'suspended', minutes: 120, photos: 12, chapters: 1, joined: 'Apr 20, 2026', lastActive: 'May 30',
+        people: [],
+        products: { Weaver: 80, Surfer: 0, Witness: 20, Reunion: 0, Scout: 10, 'Companion (Narrator)': 10 } },
+      { id: 8, name: 'ann', email: 'ann.b@gmail.com', plan: 'Solo', companion: 'Seth', status: 'active', minutes: 610, photos: 74, chapters: 5, joined: 'May 1, 2026', lastActive: 'Jun 29',
+        people: [ { name: 'George', relation: 'grandfather', via: 'Chapter 3', date: 'Jun 2' } ],
+        products: { Weaver: 300, Surfer: 90, Witness: 130, Reunion: 30, Scout: 30, 'Companion (Narrator)': 30 } },
+      { id: 9, name: 'beth', email: 'beth.k@gmail.com', plan: 'Solo', companion: 'Seth', status: 'invited', minutes: 0, photos: 0, chapters: 0, joined: 'invited Jun 26', lastActive: '—',
+        people: [], products: { Weaver: 0, Surfer: 0, Witness: 0, Reunion: 0, Scout: 0, 'Companion (Narrator)': 0 } },
+      { id: 10, name: 'tom', email: 'tom.r@gmail.com', plan: 'Solo', companion: 'Miriam', status: 'invited', minutes: 0, photos: 0, chapters: 0, joined: 'invited Jul 1', lastActive: '—',
+        people: [], products: { Weaver: 0, Surfer: 0, Witness: 0, Reunion: 0, Scout: 0, 'Companion (Narrator)': 0 } }
+    ]
+  };
+
+  services() {
+    return [
+      { name: 'Photo Ingestion', status: 'ok', note: '1,284 photos processed · 38ms median' },
+      { name: 'Genealogy Feed', status: 'degraded', note: 'Upstream 429s — backoff active, 3 records deferred' },
+      { name: 'Historical Archive', status: 'ok', note: '412 events indexed · coverage 1800–2026' },
+      { name: 'AI Service Core (Narrator)', status: 'ok', note: 'Seth & Miriam responsive · 1.9s median' },
+      { name: 'Weaver', status: 'ok', note: 'Web + iPad · 4 sessions today' },
+      { name: 'Surfer', status: 'ok', note: 'Vision Pro · 1 session today' },
+      { name: 'Witness', status: 'ok', note: 'Apple TV · 2 devices reporting' },
+      { name: 'Reunion', status: 'ok', note: '1 gathering scheduled' },
+      { name: 'Scout', status: 'ok', note: 'iPhone + Watch · pins resolving' }
+    ];
+  }
+
+  logs() {
+    return [
+      { time: '09:41', sev: 'error', source: 'Genealogy Feed', msg: 'Upstream genealogy API returned 429 — retry backoff at 6m, 3 records deferred' },
+      { time: '09:12', sev: 'warn', source: 'Photo Ingestion', msg: "EXIF timestamp missing on 3 of myke's uploads — era placement estimated" },
+      { time: '08:55', sev: 'info', source: 'AI Service Core (Narrator)', msg: 'Seth voice model warmed — median response 1.9s' },
+      { time: '08:30', sev: 'error', source: 'Historical Archive', msg: "Event dedupe conflict: 'Homestead Act, 1862' matched 2 archive records — held for review" },
+      { time: '08:02', sev: 'warn', source: 'Surfer', msg: 'Vision Pro session for lynn dropped mid-scene — auto-resumed at last stone' },
+      { time: '07:48', sev: 'info', source: 'Weaver', msg: 'mom completed Chapter 11 — 14 new stones placed in the River' },
+      { time: '07:21', sev: 'info', source: 'Reunion', msg: 'Gathering scheduled by mark — 4 invitations sent' },
+      { time: '06:58', sev: 'warn', source: 'Witness', msg: "Apple TV heartbeat late from device 'den-tv' (mom) — 11 minute gap" },
+      { time: '06:40', sev: 'info', source: 'Scout', msg: 'Location pin resolved: Auburn, WA → 2 family events nearby' },
+      { time: '06:12', sev: 'error', source: 'Photo Ingestion', msg: 'Checksum failed for IMG_4471.heic (paul) — client asked to resend' },
+      { time: '05:30', sev: 'info', source: 'Genealogy Feed', msg: 'Nightly sync complete — 12 family members updated, 0 conflicts' },
+      { time: '04:15', sev: 'info', source: 'Historical Archive', msg: '412 events indexed — River coverage 1800–2026 complete' }
+    ];
+  }
+
+  fmtTime(min) {
+    if (!min) return '0m';
+    const h = Math.floor(min / 60), m = min % 60;
+    return h ? h + 'h ' + (m ? m + 'm' : '') : m + 'm';
+  }
+
+  pill(status) {
+    const map = {
+      active:    { bg: 'rgba(74,124,89,0.18)',  color: '#31573E', label: 'Active' },
+      invited:   { bg: 'rgba(196,135,58,0.20)', color: '#8A5D24', label: 'Invited' },
+      suspended: { bg: 'rgba(107,76,42,0.20)',  color: '#6B4C2A', label: 'Suspended' },
+      cancelled: { bg: 'rgba(122,115,106,0.20)', color: '#7A736A', label: 'Cancelled' }
+    };
+    return map[status] || map.active;
+  }
+
+  sevPill(sev) {
+    const map = {
+      error: { bg: '#6B4C2A', color: '#F2E6BC' },
+      warn:  { bg: 'rgba(196,135,58,0.25)', color: '#8A5D24' },
+      info:  { bg: 'rgba(91,143,168,0.20)', color: '#3E637A' }
+    };
+    return map[sev];
+  }
+
+  toast(msg) {
+    clearTimeout(this._toastT);
+    this.setState({ toastMsg: msg });
+    this._toastT = setTimeout(() => this.setState({ toastMsg: '' }), 3200);
+  }
+
+  updateSub(id, patch) {
+    this.setState(st => ({ subs: st.subs.map(s => s.id === id ? { ...s, ...patch } : s) }));
+  }
+
+  subVM(s, chaptersTotal) {
+    const pillC = this.pill(s.status);
+    return {
+      ...s,
+      initial: s.name[0],
+      statusLabel: pillC.label, pillBg: pillC.bg, pillColor: pillC.color,
+      engagedLabel: this.fmtTime(s.minutes),
+      chaptersPct: Math.round(100 * s.chapters / chaptersTotal),
+      chaptersLabel: 'Chapter ' + s.chapters + ' of ' + chaptersTotal,
+      chaptersShort: s.chapters + '/' + chaptersTotal,
+      peopleCount: s.people.length,
+      open: () => this.setState({ section: 'subscribers', selectedId: s.id })
+    };
+  }
+
+  renderVals() {
+    const st = this.state;
+    const chaptersTotal = this.props.chaptersTotal ?? 12;
+    const env = this.props.environment ?? 'production';
+    const go = (section) => () => this.setState({ section, selectedId: null });
+
+    const navDefs = [
+      { key: 'dashboard', label: 'Overview' },
+      { key: 'subscribers', label: 'Subscribers', badge: String(st.subs.length) },
+      { key: 'progress', label: 'Progress' },
+      { key: 'sources', label: 'Sources & Logs' }
+    ];
+    const navItems = navDefs.map(n => {
+      const active = st.section === n.key;
+      return {
+        label: n.label, badge: n.badge || '',
+        bg: active ? 'rgba(242,230,188,0.14)' : 'transparent',
+        color: active ? '#F2E6BC' : 'rgba(242,230,188,0.72)',
+        dot: active ? '#C4873A' : 'rgba(242,230,188,0.35)',
+        go: go(n.key)
+      };
+    });
+
+    const titles = {
+      dashboard: ['Overview', 'quiet water — everything in view'],
+      subscribers: ['Subscribers', st.subs.length + ' on the path'],
+      progress: ['Progress', 'time, photographs, chapters'],
+      sources: ['Sources & Logs', 'ingestion, service health, and the error log']
+    };
+
+    const vms = st.subs.map(s => this.subVM(s, chaptersTotal));
+
+    // ---- subscribers list ----
+    const q = st.query.trim().toLowerCase();
+    const filteredSubs = vms.filter(s =>
+      (st.statusFilter === 'all' || s.status === st.statusFilter) &&
+      (!q || s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q))
+    );
+    const chipDefs = [
+      { v: 'all', label: 'All' }, { v: 'active', label: 'Active' },
+      { v: 'invited', label: 'Invited' }, { v: 'suspended', label: 'Suspended' }
+    ];
+    const statusChips = chipDefs.map(c => {
+      const on = st.statusFilter === c.v;
+      return { label: c.label, go: () => this.setState({ statusFilter: c.v }),
+        bg: on ? '#1E2A3A' : 'transparent', color: on ? '#F2E6BC' : '#6B4C2A',
+        border: on ? '#1E2A3A' : '#D4CDBF' };
+    });
+
+    // ---- selected subscriber ----
+    const raw = st.subs.find(s => s.id === st.selectedId);
+    let sel = null, impersonate, toggleSuspend, refund, cancelSub, suspendLabel = '';
+    if (raw) {
+      const vm = this.subVM(raw, chaptersTotal);
+      const maxP = Math.max(1, ...Object.values(raw.products));
+      sel = {
+        ...vm,
+        hasPeople: raw.people.length > 0,
+        noPeople: raw.people.length === 0,
+        people: raw.people.map(p => ({ ...p, initial: p.name[0] })),
+        productRows: Object.entries(raw.products).map(([name, min]) => ({
+          name, label: this.fmtTime(min), pct: Math.round(100 * min / maxP)
+        })),
+        setPlan: e => this.updateSub(raw.id, { plan: e.target.value }),
+        setCompanion: e => this.updateSub(raw.id, { companion: e.target.value }),
+        setStatus: e => this.updateSub(raw.id, { status: e.target.value })
+      };
+      suspendLabel = raw.status === 'suspended' ? 'Reactivate' : 'Suspend';
+      impersonate = () => this.toast('Viewing the path as ' + raw.name + ' — impersonation session started');
+      toggleSuspend = () => {
+        const next = raw.status === 'suspended' ? 'active' : 'suspended';
+        this.updateSub(raw.id, { status: next });
+        this.toast(raw.name + (next === 'suspended' ? ' suspended — the stones are held safe' : ' reactivated — back on the path'));
+      };
+      refund = () => this.toast('Last payment refunded to ' + raw.name);
+      cancelSub = () => {
+        this.updateSub(raw.id, { status: 'cancelled' });
+        this.toast(raw.name + "'s subscription cancelled — their River is preserved");
+      };
+    }
+
+    // ---- dashboard ----
+    const totalPhotos = st.subs.reduce((a, s) => a + s.photos, 0);
+    const sourceTiles = [
+      { label: 'Photos ingested', value: '1,284', note: totalPhotos + ' from subscribers · rest from archives' },
+      { label: 'Subscribers', value: String(st.subs.length), note: st.subs.filter(s => s.status === 'active').length + ' active · ' + st.subs.filter(s => s.status === 'invited').length + ' invited' },
+      { label: 'Family members ingested', value: '86', note: st.subs.reduce((a, s) => a + s.people.length, 0) + ' added through dialogue' },
+      { label: 'Historical events', value: '412', note: 'River coverage 1800–2026' }
+    ];
+    const svc = this.services();
+    const dotFor = s => s === 'ok' ? '#4A7C59' : s === 'degraded' ? '#C4873A' : '#6B4C2A';
+    const services = svc.map(sv => ({
+      ...sv,
+      dot: dotFor(sv.status),
+      border: sv.status === 'ok' ? '#D4CDBF' : '#C4873A',
+      statusLabel: sv.status === 'ok' ? 'healthy' : sv.status,
+      pick: () => this.setState({ section: 'sources', logSource: sv.name, logSev: 'all' })
+    }));
+    const degradedCount = svc.filter(s => s.status !== 'ok').length;
+    const healthSummary = degradedCount ? degradedCount + ' of ' + svc.length + ' services degraded' : 'all ' + svc.length + ' services healthy';
+
+    const allLogs = this.logs();
+    const recentIssues = allLogs.filter(l => l.sev !== 'info').slice(0, 4).map(l => ({
+      ...l, ...({ pillBg: this.sevPill(l.sev).bg, pillColor: this.sevPill(l.sev).color })
+    }));
+    const topSubs = [...vms].filter(s => s.status === 'active').sort((a, b) => b.minutes - a.minutes).slice(0, 4);
+
+    // ---- progress ----
+    const activeSubs = st.subs.filter(s => s.status === 'active' || s.status === 'suspended');
+    const maxMin = Math.max(1, ...st.subs.map(s => s.minutes));
+    const progressRows = [...vms].sort((a, b) => b.minutes - a.minutes).map(s => ({
+      ...s, engagedPct: Math.round(100 * s.minutes / maxMin)
+    }));
+    const totalChapters = st.subs.reduce((a, s) => a + s.chapters, 0);
+    const avgMin = Math.round(st.subs.reduce((a, s) => a + s.minutes, 0) / Math.max(1, activeSubs.length));
+    const progressTiles = [
+      { label: 'Avg. time engaged', value: this.fmtTime(avgMin), note: 'per active subscriber, all time' },
+      { label: 'Photographs attached', value: String(totalPhotos), note: 'by subscribers, across the family' },
+      { label: 'Chapters completed', value: String(totalChapters), note: 'of ' + (st.subs.length * chaptersTotal) + ' possible across ' + st.subs.length + ' subscribers' }
+    ];
+    const aggMap = {};
+    st.subs.forEach(s => Object.entries(s.products).forEach(([k, v]) => { aggMap[k] = (aggMap[k] || 0) + v; }));
+    const maxAgg = Math.max(1, ...Object.values(aggMap));
+    const productAgg = Object.entries(aggMap).sort((a, b) => b[1] - a[1]).map(([name, min]) => ({
+      name, label: this.fmtTime(min), pct: Math.round(100 * min / maxAgg)
+    }));
+
+    // ---- logs ----
+    const sevDefs = [
+      { v: 'all', label: 'All' }, { v: 'error', label: 'Errors' },
+      { v: 'warn', label: 'Warnings' }, { v: 'info', label: 'Info' }
+    ];
+    const sevChips = sevDefs.map(c => {
+      const on = st.logSev === c.v;
+      return { label: c.label, go: () => this.setState({ logSev: c.v }),
+        bg: on ? '#1E2A3A' : 'transparent', color: on ? '#F2E6BC' : '#6B4C2A',
+        border: on ? '#1E2A3A' : '#D4CDBF' };
+    });
+    const logSourceOptions = [{ v: 'all', label: 'All sources' }, ...svc.map(s => ({ v: s.name, label: s.name }))];
+    const filteredLogs = allLogs.filter(l =>
+      (st.logSev === 'all' || l.sev === st.logSev) &&
+      (st.logSource === 'all' || l.source === st.logSource)
+    ).map(l => ({ ...l, sev: l.sev.toUpperCase(), pillBg: this.sevPill(l.sev).bg, pillColor: this.sevPill(l.sev).color }));
+
+    return {
+      navItems,
+      envLabel: env,
+      sectionTitle: titles[st.section][0],
+      sectionSub: titles[st.section][1],
+      showDashboard: st.section === 'dashboard',
+      showSubList: st.section === 'subscribers' && !raw,
+      showSubDetail: st.section === 'subscribers' && !!raw,
+      showProgress: st.section === 'progress',
+      showSources: st.section === 'sources',
+      goSources: go('sources'),
+      goProgress: go('progress'),
+      sourceTiles, services, healthSummary, recentIssues, topSubs,
+      query: st.query,
+      setQuery: e => this.setState({ query: e.target.value }),
+      statusChips, filteredSubs,
+      noResults: filteredSubs.length === 0,
+      sel, back: () => this.setState({ selectedId: null }),
+      impersonate, toggleSuspend, refund, cancelSub, suspendLabel,
+      progressTiles, progressRows, productAgg,
+      sevChips, logSourceOptions,
+      logSource: st.logSource,
+      setLogSource: e => this.setState({ logSource: e.target.value }),
+      filteredLogs,
+      noLogs: filteredLogs.length === 0,
+      showInvite: st.showInvite,
+      openInvite: () => this.setState({ showInvite: true, inviteName: '', inviteEmail: '' }),
+      closeInvite: () => this.setState({ showInvite: false }),
+      stop: e => e.stopPropagation(),
+      inviteName: st.inviteName,
+      inviteEmail: st.inviteEmail,
+      setInviteName: e => this.setState({ inviteName: e.target.value }),
+      setInviteEmail: e => this.setState({ inviteEmail: e.target.value }),
+      sendInvite: () => {
+        const name = st.inviteName.trim();
+        if (!name) { this.toast('A name, at least — the letter needs someone to greet.'); return; }
+        this.setState(s2 => ({
+          showInvite: false,
+          subs: [...s2.subs, {
+            id: Date.now(), name, email: st.inviteEmail.trim() || name + '@example.com',
+            plan: 'Solo', companion: 'Seth', status: 'invited', minutes: 0, photos: 0, chapters: 0,
+            joined: 'invited Jul 3', lastActive: '—', people: [],
+            products: { Weaver: 0, Surfer: 0, Witness: 0, Reunion: 0, Scout: 0, 'Companion (Narrator)': 0 }
+          }]
+        }));
+        this.toast('Invitation sent to ' + name + ' — the path is ready when they are');
+      },
+      toastMsg: st.toastMsg
+    };
+  }
+}
+</script>
+</body>
+</html>
