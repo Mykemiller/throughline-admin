@@ -96,7 +96,11 @@ export function Sidebar({ subCount, envLabel, userName }: { subCount: number; en
           animation: "brookFlow 11s ease-in-out infinite",
         }}
       />
-      <div style={{ padding: "0 10px", display: "flex", alignItems: "center", gap: 10 }}>
+      <Link
+        href="/account"
+        style={{ padding: "0 10px", display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "#F2E6BC" }}
+        title="Account — change the steward's key"
+      >
         <div
           style={{
             width: 30,
@@ -117,7 +121,7 @@ export function Sidebar({ subCount, envLabel, userName }: { subCount: number; en
           <div style={{ fontSize: 13, fontWeight: 500 }}>{userName}</div>
           <div style={{ fontSize: 11, color: "#7A736A" }}>steward · {envLabel}</div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }

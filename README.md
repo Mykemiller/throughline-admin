@@ -33,21 +33,16 @@ Note: the env template is `env.example` (no leading dot) so tooling never confus
 | --- | --- |
 | `DATABASE_URL` | Prisma runtime URL. Production: Supabase **transaction pooler** (`:6543`) with `?pgbouncer=true&connection_limit=1&schema=admin` |
 | `DIRECT_URL` | Migrations/seed URL. Production: Supabase **session pooler** (`:5432`) with `?schema=admin` |
-| `AUTH_SECRET` | Signs steward sessions, magic-link tokens, impersonation tokens |
-| `ADMIN_EMAILS` | Comma-separated allowlist of steward emails. Every session has role `steward` |
-| `ADMIN_ACCESS_KEY` | Steward-key login at `/login` — the bootstrap path until an email provider is configured |
+| `AUTH_SECRET` | Signs steward sessions and impersonation tokens |
 | `SERVICE_TOKENS` | Telemetry bearer tokens, `slug:token` comma-separated (slugs below) |
-| `RESEND_API_KEY` / `EMAIL_FROM` | Optional. When set, magic-link + invitation letters are actually delivered; otherwise the mailer logs them server-side |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Optional. When set, invitation letters are actually delivered; otherwise the mailer logs them server-side |
 | `STRIPE_SECRET_KEY` | Optional. When set, refunds hit Stripe; otherwise a stub provider records them |
 | `NEXT_PUBLIC_APP_URL` | Base URL used in emailed links |
 | `ADMIN_TIMEZONE` | Display TZ for "today, 9:12a" formatting (default `America/Los_Angeles`) |
 
 ## Auth
 
-`/login` offers two doors, both restricted to `ADMIN_EMAILS`:
-
-- **Letter (magic link)** — 15-minute one-time link, delivered via the mailer interface.
-- **Steward key** — `ADMIN_ACCESS_KEY` typed into the login page. Exists so the console is usable before email delivery is wired; rotate or unset it once Resend is configured.
+Email + password at `/login`. Stewards live in the `AdminUser` table (scrypt-hashed passwords); the seed creates the sole authorized steward if missing and **never resets an existing password**. Passwords are changed in the **Account** screen (click the user row at the bottom of the sidebar), which also has sign-out.
 
 Sessions are 7-day httpOnly JWT cookies with role `steward`. Everything except `/login`, `/api/auth/*`, and `/api/ingest/*` requires one.
 
@@ -89,7 +84,7 @@ Every admin mutation writes an `AuditEvent` (actor, action, subscriber, detail).
 ## Tests
 
 ```bash
-ADMIN_ACCESS_KEY=<key> pnpm e2e   # Playwright happy path: search → open → suspend → toast → log filter
+E2E_ADMIN_EMAIL=<email> E2E_ADMIN_PASSWORD=<password> pnpm e2e   # happy path: search → open → suspend → toast → log filter
 ```
 
 ## Conventions

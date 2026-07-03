@@ -3,16 +3,18 @@ import { expect, test } from "@playwright/test";
 /**
  * Happy path from the build brief:
  * search → open subscriber → suspend → toast → log filter by service.
- * Requires ADMIN_ACCESS_KEY in the environment (steward-key login).
+ * Requires E2E_ADMIN_EMAIL + E2E_ADMIN_PASSWORD in the environment.
  */
 test("steward happy path", async ({ page }) => {
-  const key = process.env.ADMIN_ACCESS_KEY;
-  test.skip(!key, "ADMIN_ACCESS_KEY not set");
+  const email = process.env.E2E_ADMIN_EMAIL;
+  const password = process.env.E2E_ADMIN_PASSWORD;
+  test.skip(!email || !password, "E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD not set");
 
-  // login via steward key
+  // login
   await page.goto("/login");
-  await page.getByTestId("login-key").fill(key!);
-  await page.getByTestId("login-key-submit").click();
+  await page.getByTestId("login-email").fill(email!);
+  await page.getByTestId("login-password").fill(password!);
+  await page.getByTestId("login-submit").click();
   await page.waitForURL("**/");
 
   // search

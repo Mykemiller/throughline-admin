@@ -7,8 +7,14 @@
  * 9 services (Genealogy Feed degraded), 12 log events.
  */
 import { PrismaClient, type Companion, type Plan, type Product, type Severity, type SubscriberStatus } from "@prisma/client";
+import { hashPassword } from "../src/lib/passwords";
 
 const prisma = new PrismaClient();
+
+// The sole authorized steward. Created only if missing — the seed NEVER resets
+// an existing password (Myke rotates it in the Account screen).
+const ADMIN_EMAIL = "mykemiller@gmail.com";
+const ADMIN_INITIAL_PASSWORD = "Seth";
 const TZ = "America/Los_Angeles";
 
 /** Date at local (LA) wall-clock time, daysAgo days before today. */
@@ -187,6 +193,17 @@ const GENEALOGY_RELATIONS = [
 ];
 
 async function main() {
+  console.log("Steward account…");
+  const existingAdmin = await prisma.adminUser.findUnique({ where: { email: ADMIN_EMAIL } });
+  if (!existingAdmin) {
+    await prisma.adminUser.create({
+      data: { email: ADMIN_EMAIL, passwordHash: hashPassword(ADMIN_INITIAL_PASSWORD) },
+    });
+    console.log(`  created ${ADMIN_EMAIL} with the initial key`);
+  } else {
+    console.log(`  ${ADMIN_EMAIL} exists — password untouched`);
+  }
+
   console.log("Clearing admin schema…");
   await prisma.$transaction([
     prisma.auditEvent.deleteMany(),
